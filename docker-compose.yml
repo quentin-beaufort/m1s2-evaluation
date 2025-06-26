@@ -1,0 +1,116 @@
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    container_name: app_database
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ngtodo
+      POSTGRES_USER: todo
+      POSTGRES_PASSWORD: todoPWD
+    ports:
+      - "5440:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db:/docker-entrypoint-initdb.d
+    networks:
+      - app_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U todo -d ngtodo"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Backend API
+  backend:
+    build:
+      context: ./back
+      dockerfile: Dockerfile
+    container_name: app_backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      DB_HOST: db
+      DB_NAME: ngtodo
+      DB_USER: todo
+      DB_PWD: todoPWD
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./back:/app
+      - /app/node_modules
+    networks:
+      - app_network
+    command: npm start
+
+  # Frontend Angular App
+  frontend:
+    build:
+      context: ./front
+      dockerfile: Dockerfile
+    container_name: app_frontend
+    restart: unless-stopped
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+    networks:
+      - app_network
+
+  # Development backend (for development mode)
+  backend-dev:
+    build:
+      context: ./back
+      dockerfile: Dockerfile.dev
+    container_name: app_backend_dev
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      DB_HOST: db
+      DB_NAME: ngtodo
+      DB_USER: todo
+      DB_PWD: todoPWD
+      PORT: 3000
+    ports:
+      - "3001:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./back:/app
+      - /app/node_modules
+    networks:
+      - app_network
+    command: npm run dev
+    profiles:
+      - dev
+
+  # Development frontend (for development mode)
+  frontend-dev:
+    build:
+      context: ./front
+      dockerfile: Dockerfile.dev
+    container_name: app_frontend_dev
+    restart: unless-stopped
+    ports:
+      - "4201:4200"
+    depends_on:
+      - backend-dev
+    volumes:
+      - ./front:/app
+      - /app/node_modules
+    networks:
+      - app_network
+    profiles:
+      - dev
+
+volumes:
+  postgres_data:
+
+networks:
+  app_network:
+    driver: bridge
