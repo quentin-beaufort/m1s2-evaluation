@@ -12,7 +12,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Get member by ID test
+// Get member by ID
 router.get('/:id', async (req, res) => {
     try {
         const membre = await Membre.findByPk(req.params.id);
