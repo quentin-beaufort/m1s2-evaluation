@@ -3,13 +3,20 @@ const cors = require('cors');
 const Membre = require('./models/membres'); 
 const sequelize = require('./db.config');
 
-// sequelize.sync({ force: false })
-//   .then(() => {
-//     console.log('Base de données synchronisée');
-//   })
-//   .catch(err => {
-//     console.error('Erreur lors de la synchronisation:', err);
-//   });   
+const app = express();
+
+app.use(express.json()); // Pour parser le JSON
+app.use(express.urlencoded({ extended: true }));
+
+// Importer les routes
+const membresRoutes = require('./routes/membres');
+
+app.use('/api/membres',membresRoutes);
+
+app.use(cors({
+    origin: 'http://212.83.130.191',
+    credentials: true
+}))
 
 async function testConnection() {
     try {
@@ -28,4 +35,10 @@ async function testConnection() {
     }
   }
   
-  testConnection();
+  const PORT = process.env.PORT || 3000;
+
+  testConnection().then(()=>{
+    app.listen(PORT,()=>{
+        console.log(`🚀 Serveur démarré sur http://localhost:${PORT}}`);
+    })
+  });
