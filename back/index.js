@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-
+const Membre = require('./models/membres'); 
 const sequelize = require('./db.config');
 
 // sequelize.sync({ force: false })
