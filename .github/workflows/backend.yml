@@ -3,10 +3,10 @@ name: Backend CI
 on:
   push:
     paths:
-      - 'backend/**'
+      - 'back/**'
   pull_request:
     paths:
-      - 'backend/**'
+      - 'back/**'
 
 jobs:
   test:
@@ -15,9 +15,9 @@ jobs:
       postgres:
         image: postgres:14
         env:
-          POSTGRES_DB: members
-          POSTGRES_USER: user
-          POSTGRES_PASSWORD: pass
+          POSTGRES_DB: ngtodo
+          POSTGRES_USER: todo
+          POSTGRES_PASSWORD: todoPWD
         ports: ['5432:5432']
         options: >-
           --health-cmd pg_isready
@@ -26,7 +26,7 @@ jobs:
           --health-retries 5
 
     env:
-      DATABASE_URL: postgres://user:pass@localhost:5432/members
+      DATABASE_URL: postgres://todo:todoPWD@212.83.130.191:5432/ngtodo
 
     defaults:
       run:
