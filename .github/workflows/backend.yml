@@ -30,7 +30,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: backend
+        working-directory: back
 
     steps:
       - uses: actions/checkout@v4
