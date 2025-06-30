@@ -1,0 +1,71 @@
+<!-- Formulaire d'ajout de membre -->
+<div class="card p-3 mb-4 bg-dark text-white container-membre-input">
+  <h5 class="mb-3">Ajouter un membre</h5>
+  <form (ngSubmit)="addMembre()" #membreForm="ngForm">
+    <div class="row g-2">
+      <div class="col-md-4">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Prénom"
+          name="firstName"
+          [(ngModel)]="newMembre.firstName"
+          required
+        />
+      </div>
+      <div class="col-md-4">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Nom"
+          name="lastName"
+          [(ngModel)]="newMembre.lastName"
+          required
+        />
+      </div>
+      <div class="col-md-4">
+        <input
+          type="email"
+          class="form-control"
+          placeholder="Email"
+          name="email"
+          [(ngModel)]="newMembre.email"
+          required
+        />
+      </div>
+    </div>
+    <div class="mt-3 d-flex justify-content-end">
+      <button class="btn btn-primary" type="submit" [disabled]="membreForm.invalid">
+        Ajouter
+      </button>
+    </div>
+  </form>
+</div>
+
+<!-- Liste des membres -->
+<ul class="membres-list">
+  <li *ngFor="let membre of membres; let i = index" class="membre-item">
+    <div *ngIf="!membre.editing">
+      <span class="membre-nom">{{ membre.firstName }} {{ membre.lastName }}</span> -
+      <span class="membre-email">{{ membre.email }}</span>
+
+      <div class="action-buttons">
+        <button class="btn btn-sm btn-outline-primary" (click)="toggleEditMembre(i)">Edit</button>
+        <button class="btn btn-sm btn-outline-danger" (click)="deleteMembre(membre.id!)">Delete</button>
+      </div>
+    </div>
+
+    <div *ngIf="membre.editing" class="editing-container">
+      <input class="form-control mb-2" [(ngModel)]="membre.firstName" placeholder="Prénom" />
+      <input class="form-control mb-2" [(ngModel)]="membre.lastName" placeholder="Nom" />
+      <input class="form-control mb-2" [(ngModel)]="membre.email" placeholder="Email" />
+      <button class="btn btn-sm btn-success" (click)="toggleEditMembre(i)">Save</button>
+    </div>
+  </li>
+
+  <!-- Si aucune entrée -->
+  <div *ngIf="membres.length === 0" class="no-membres-container">
+    <i class="no-membres-icon bi bi-people"></i>
+    <p>Aucun membre trouvé.</p>
+  </div>
+</ul>

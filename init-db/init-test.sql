@@ -1,0 +1,6 @@
+CREATE ROLE todo WITH LOGIN PASSWORD 'todoPWD';
+
+CREATE DATABASE laura
+    WITH OWNER = todo
+    ENCODING = 'UTF8'
+    TEMPLATE = template0;

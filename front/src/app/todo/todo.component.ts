@@ -1,9 +1,8 @@
-import { WeatherService } from './../service/weather.service';
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-
+import { TaskService,Task } from '../service/task.service';
 @Component({
   selector: 'app-todo',
   standalone: true,
@@ -12,25 +11,24 @@ import { Router } from '@angular/router';
   styleUrls: ['./todo.component.css']
 })
 export class TodoComponent implements OnInit {
-  tasks: { text: string; completed: boolean; editing: boolean }[] = [];
+  tasks:Task[] = [];
   newTask: string = '';
-  constructor(private router: Router) {}
+  constructor(private TaskService: TaskService,private router: Router) {}
   ngOnInit() {
-    // Load tasks from local storage
-    const savedTasks = localStorage.getItem('tasks');
-    if (savedTasks) {
-      this.tasks = JSON.parse(savedTasks);
-    }
-
+    this.loadTasks();
     // Request notification permission from the user
     if ("Notification" in window) {
       Notification.requestPermission();
     }
 
-    // Run background task every minute
+    
     setInterval(() => {
       this.showTaskNotification();
     }, 3600000); // Every 60 mins
+  }
+
+  loadTasks(){
+    this.TaskService.getTasks().subscribe(tasks => this.tasks = tasks);
   }
 
 
@@ -68,31 +66,44 @@ export class TodoComponent implements OnInit {
 
   addTask() {
     if (this.newTask.trim()) {
-      this.tasks.unshift({ text: this.newTask, completed: false, editing: false });
-      this.newTask = '';
-      this.saveToLocalStorage(); // Save tasks to local storage
+      const newTask : Task = {text: this.newTask,completed:false,editing: false};
+      this.TaskService.createTask(newTask).subscribe(t => {
+        this.newTask = '';
+        this.tasks.unshift(t);
+      })
     }
   }
 
   toggleTaskCompletion(index: number) {
-    this.tasks[index].completed = !this.tasks[index].completed;
-    this.saveToLocalStorage(); // Save tasks to local storage
+    const task = this.tasks[index];
+    task.completed = !task.completed;
+    this.TaskService.updateTask(task.id!,task).subscribe(t=>{
+      this.tasks[index] = t;
+    })
   }
 
   toggleEditTask(index: number) {
-    if (this.tasks[index].editing) {
-      // Save task
-      this.tasks[index].editing = false;
-      this.saveToLocalStorage(); // Save tasks to local storage
-    } else {
-      // Enable edit mode
-      this.tasks[index].editing = true;
+    const task = this.tasks[index];
+    if(task.editing){
+      this.updateTask(index)
     }
+    task.editing = !task.editing;
+  }
+
+  updateTask(index:number){
+    const task = this.tasks[index];
+    task.editing = false;
+    
+    this.TaskService.updateTask(task.id!,task).subscribe(t=>{
+      this.tasks[index] = t;
+    })
   }
 
   deleteTask(index: number) {
-    this.tasks.splice(index, 1);
-    this.saveToLocalStorage(); // Save tasks to local storage
+    const task = this.tasks[index];
+    this.TaskService.deleteTask(task.id!).subscribe(t=>{
+      this.tasks.splice(index,1)
+    })
   }
 
   get remainingTasks() {
@@ -103,7 +114,4 @@ export class TodoComponent implements OnInit {
     return this.tasks.filter(task => task.completed).length;
   }
 
-  private saveToLocalStorage() {
-    localStorage.setItem('tasks', JSON.stringify(this.tasks));
-  }
 }
