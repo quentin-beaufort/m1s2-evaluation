@@ -1,0 +1,108 @@
+/* Membres Card */
+.membres-list {
+    background: #212121;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    min-height: 60vh;
+    max-height: 70vh;
+    overflow-y: auto;
+    z-index: 1;
+  }
+  
+  /* Aucune entrée */
+  .no-membres-container {
+    min-height: 60vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+  
+  .no-membres-container p {
+    color: #bbb;
+    line-height: 1.2;
+  }
+  
+  .no-membres-icon {
+    font-size: 50px;
+    color: #888;
+  }
+  
+  /* Membres Item */
+  .membre-item {
+    background: #2c2c2c;
+    border-radius: 5px;
+    transition: all 0.3s ease-in-out;
+    color: #ffffff;
+    border: 1px solid #3a3a3a;
+    padding: 10px 15px;
+    margin-bottom: 10px;
+  }
+  
+  .membre-item:hover {
+    background: #333333;
+  }
+  
+  /* Texte Membre */
+  .membre-nom {
+    font-weight: 500;
+    color: #fff;
+  }
+  
+  .membre-email {
+    font-size: 0.85rem;
+    color: #bbb;
+  }
+  
+  /* Actions */
+  .action-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  
+  .action-buttons button {
+    font-size: 0.85rem;
+    padding: 6px 10px;
+  }
+  
+  /* Dropdown */
+  .dropdown-toggle {
+    background: none;
+    border: none;
+  }
+  
+  .dropdown-menu {
+    background: #333333;
+    border: 1px solid #444;
+  }
+  
+  .dropdown-item {
+    color: #ffffff;
+  }
+  
+  .dropdown-item:hover {
+    background: #444444;
+  }
+  
+  /* Ajouter Membre */
+  .container-membre-input {
+    width: 50%;
+    margin: auto;
+    margin-top: -20px;
+    z-index: 2;
+  }
+  
+  @media (max-width: 1024px) {
+    .container-membre-input {
+      width: 80%;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .container-membre-input {
+      width: 100%;
+    }
+  }
+  
