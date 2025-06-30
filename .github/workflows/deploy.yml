@@ -34,11 +34,11 @@ jobs:
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
             docker pull lahittm/todo-backend:latest
             docker pull lahittm/todo-frontend:latest
-            cd /path/to/your/project
+            cd /root/m1s2-evaluation
             docker compose pull
             docker compose up -d --remove-orphans
