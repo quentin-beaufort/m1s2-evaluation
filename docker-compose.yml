@@ -13,6 +13,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./init-db:/docker-entrypoint-initdb.d
+      - ./pg_hba.conf:/etc/postgresql/15/main/pg_hba.conf
     networks:
       - app_network
     healthcheck:
@@ -20,6 +21,9 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+    command: >
+      postgres
+      -c hba_file=/var/lib/postgresql/data/pg_hba.conf
 
   # Backend API
   backend:
