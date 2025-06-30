@@ -40,6 +40,6 @@ jobs:
             docker pull lahittm/todo-backend:latest
             docker pull lahittm/todo-frontend:latest
             cd /root/m1s2-evaluation
-            docker compose pull
-            docker compose down
-            docker compose up -d --remove-orphans
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml pull
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml down
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --remove-orphans
