@@ -39,6 +39,6 @@ jobs:
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
             docker pull lahittm/todo-backend:latest
             docker pull lahittm/todo-frontend:latest
-            cd /path/to/your/project
+            cd /root/m1s2-evaluation
             docker compose pull
             docker compose up -d --remove-orphans
