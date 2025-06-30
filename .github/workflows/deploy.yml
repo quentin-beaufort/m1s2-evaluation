@@ -1,32 +1,44 @@
-name: Deploy to Staging & Production
+name: Build & Push Frontend and Backend
 
 on:
-  workflow_dispatch:
   push:
-    branches: [main]
+    branches: [develop]
+
+env:
+  REGISTRY: docker.io
+  IMAGE_PREFIX: lahittm
+  TAG: latest
 
 jobs:
-  deploy:
+  build-and-push:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
       - name: Login to Docker Hub
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
-      - name: Build and Push Docker Images
+      - name: Build and Push Backend
         run: |
-          docker-compose -f docker-compose.prod.yml build
-          docker-compose -f docker-compose.prod.yml push
+          docker build ./back -t ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/todo-backend:${{ env.TAG }}
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/todo-backend:${{ env.TAG }}
+
+      - name: Build and Push Frontend
+        run: |
+          docker build ./front -t ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/todo-frontend:${{ env.TAG }}
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/todo-frontend:${{ env.TAG }}
+
 
       - name: Deploy to Server (e.g. via SSH)
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd /var/www/app && git pull
-            docker-compose -f docker-compose.prod.yml down
-            docker-compose -f docker-compose.prod.yml up -d
+            docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+            docker pull lahittm/todo-backend:latest
+            docker pull lahittm/todo-frontend:latest
+            cd /root/m1s2-evaluation
+            docker compose pull
+            docker compose up -d --remove-orphans

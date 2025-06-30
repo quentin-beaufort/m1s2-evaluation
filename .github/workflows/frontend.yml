@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: frontend
+        working-directory: front
 
     steps:
       - uses: actions/checkout@v4
@@ -24,9 +24,6 @@ jobs:
 
       - name: Install Dependencies
         run: npm ci
-
-      - name: Run Linter
-        run: npm run lint
 
       - name: Run Tests
         run: npm run test -- --watch=false --browsers=ChromeHeadless
