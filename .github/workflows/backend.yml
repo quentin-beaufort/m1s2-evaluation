@@ -15,7 +15,7 @@ jobs:
       postgres:
         image: postgres:14
         env:
-          POSTGRES_DB: ngtodo
+          POSTGRES_DB: laura
           POSTGRES_USER: todo
           POSTGRES_PASSWORD: todoPWD
         ports: ['5432:5432']
@@ -26,7 +26,7 @@ jobs:
           --health-retries 5
 
     env:
-      DATABASE_URL: postgres://todo:todoPWD@212.83.130.191:5432/ngtodo
+      DATABASE_URL: postgres://todo:todoPWD@212.83.130.191:5432/laura
 
     defaults:
       run:
@@ -40,8 +40,14 @@ jobs:
         with:
           node-version: 18
 
+      - name: Install npm
+        run: npm install
+
       - name: Install Dependencies
         run: npm ci
+
+      - name: Run migrations
+        run: npx sequelize-cli db:migrate --env test
 
       - name: Run Unit Tests
         run: npm run test
