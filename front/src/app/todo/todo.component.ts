@@ -21,7 +21,7 @@ export class TodoComponent implements OnInit {
       Notification.requestPermission();
     }
 
-    // Run background task every minute
+    
     setInterval(() => {
       this.showTaskNotification();
     }, 3600000); // Every 60 mins

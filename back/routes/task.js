@@ -12,7 +12,7 @@ router.get('/',async(req,res)=>{
     }
 })
 
-// Get all remaing Task
+// Get all remaing Tasks
 router.get('/remaining',async(req,res)=>{
     try {
         const remainingTasks = await Task.findAll({where: {
