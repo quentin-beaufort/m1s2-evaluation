@@ -19,7 +19,7 @@ export class MembresComponent {
     this.loadMembres();
   }
 
-  // Toggle Edit
+  // Toggle 
   toggleEditMembre(index: number): void {
     const membre = this.membres[index];
 
