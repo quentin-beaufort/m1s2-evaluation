@@ -1,4 +1,6 @@
-const app = require('../back/app');
+const express = require('express');
+const cors = require('cors');
+const Membre = require('./models/membres'); 
 const sequelize = require('./db.config');
 
 const app = express();
