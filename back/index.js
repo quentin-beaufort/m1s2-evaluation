@@ -8,15 +8,24 @@ const app = express();
 app.use(express.json()); // Pour parser le JSON
 app.use(express.urlencoded({ extended: true }));
 
-// Importer les routes
-const membresRoutes = require('./routes/membres');
-
-app.use('/api/membres',membresRoutes);
-
 app.use(cors({
-    origin: 'http://212.83.130.191',
+    origin: ['http://212.83.130.191','http://localhost:4200'],
     credentials: true
 }))
+
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  next();
+});
+
+// Importer les routes
+const membresRoutes = require('./routes/membres');
+const tacksRoutes = require('./routes/task');
+
+app.use('/api/membres',membresRoutes);
+app.use('/api/tasks',tacksRoutes);
+
 
 // Health check endpoint
 app.get('/health', (req, res) => {

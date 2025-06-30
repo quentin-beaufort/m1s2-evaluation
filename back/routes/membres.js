@@ -43,7 +43,7 @@ router.post('/', async (req, res) => {
             email
         });
         
-        res.status(201).json(membre); // ✅ 201 pour création
+        res.status(201).json(membre);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
