@@ -18,7 +18,7 @@ jobs:
           POSTGRES_DB: laura
           POSTGRES_USER: todo
           POSTGRES_PASSWORD: todoPWD
-        ports: ['5432:5432']
+        ports: ['5440:5432']
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -26,7 +26,7 @@ jobs:
           --health-retries 5
 
     env:
-      DATABASE_URL: postgres://todo:todoPWD@212.83.130.191:5432/laura
+      DATABASE_URL: postgres://todo:todoPWD@212.83.130.191:5440/laura
 
     defaults:
       run:
@@ -39,7 +39,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          
+
       - name: Npm Install
         run: npm install
         

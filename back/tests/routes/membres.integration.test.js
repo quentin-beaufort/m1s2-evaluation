@@ -9,7 +9,7 @@ app.use(express.json());
 app.use('/api/membres', membresRouter);
 
 describe('Tests d’intégration API /api/membres', () => {
-  // Avant tous les tests, sync la DB (reset tables).
+  // Avant tous les tests, sync la DB (reset tables)
   beforeAll(async () => {
     await sequelize.sync({ force: true });
   });

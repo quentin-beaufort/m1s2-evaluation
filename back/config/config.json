@@ -12,7 +12,7 @@
     "password": "todoPWD",
     "database": "laura",
     "host": "212.83.130.191",
-    "port": 5432,
+    "port": 5440,
     "dialect": "postgres"
   },
   "production": {
