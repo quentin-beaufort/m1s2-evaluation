@@ -105,7 +105,6 @@ describe('GET /api/membres/:id', () => {
   it('devrait retourner une erreur 400 si des champs sont manquants', async () => {
     const res = await request(app).post('/api/membres').send({
       firstName: 'Alice',
-      // lastName manquant
       email: 'alice@mail.com'
     });
 
