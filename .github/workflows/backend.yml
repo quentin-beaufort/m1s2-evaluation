@@ -63,9 +63,6 @@ jobs:
             sleep 2
           done
 
-      - name: Run migrations
-        run: npx sequelize-cli db:migrate --env test
-
       - name: Run Unit Tests
         run: npm run test
 
