@@ -13,17 +13,14 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./init-db:/docker-entrypoint-initdb.d
-      - ./pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
     networks:
       - app_network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U todo -d ngtodo"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    command: >
-      postgres
-      -c hba_file=/var/lib/postgresql/data/pg_hba.conf
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   # PostgreSQL Test Database
   db-test:
@@ -37,7 +34,7 @@ services:
     ports:
       - "5441:5432"
     volumes:
-      - postgres_test_data:/var/lib/postgresql/datas
+      - postgres_test_data:/var/lib/postgresql/data
       - ./init-db:/docker-entrypoint-initdb.d
     networks:
       - app_network

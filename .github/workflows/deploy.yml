@@ -36,11 +36,46 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            echo "Starting deployment process..."
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+            
+            echo "Pulling latest images..."
             docker pull lahittm/todo-backend:latest
             docker pull lahittm/todo-frontend:latest
+            
+            echo "Navigating to project directory..."
             cd /root/m1s2-evaluation
+            
+            echo "Pulling compose images..."
             docker compose -f docker-compose.yml -f docker-compose.prod.yml pull
-            docker compose -f docker-compose.yml -f docker-compose.prod.yml down -v
+            
+            echo "Stopping existing containers and removing volumes..."
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml down -v --remove-orphans
+            
+            echo "Cleaning up unused Docker resources..."
             docker system prune -f
+            
+            echo "Starting services..."
             docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --remove-orphans
+            
+            echo "Waiting for database to be ready..."
+            timeout=300
+            while [ $timeout -gt 0 ]; do
+                if docker compose -f docker-compose.yml -f docker-compose.prod.yml ps | grep -q "app_database_prod.*healthy"; then
+                    echo "Database is healthy!"
+                    break
+                fi
+                echo "Waiting for database... ($timeout seconds left)"
+                sleep 10
+                timeout=$((timeout - 10))
+            done
+            
+            if [ $timeout -le 0 ]; then
+                echo "Database failed to become healthy. Checking logs..."
+                docker compose -f docker-compose.yml -f docker-compose.prod.yml logs db
+                exit 1
+            fi
+            
+            echo "Checking final status..."
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml ps
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml logs --tail=20
