@@ -63,8 +63,5 @@ jobs:
             sleep 2
           done
 
-      - name: Run Unit Tests
+      - name: Run Unit and Integration Tests
         run: npm run test
-
-      - name: Run Integration Tests
-        run: npm run test:integration
