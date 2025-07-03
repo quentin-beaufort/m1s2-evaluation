@@ -1,9 +1,9 @@
 {
   "development": {
-    "username": "ton_user_dev",
-    "password": "ton_mdp_dev",
-    "database": "ta_db_dev",
-    "host": "localhost",
+    "username": "todo",
+    "password": "todoPWD",
+    "database": "ngtodo",
+    "host": "db",
     "port": 5432,
     "dialect": "postgres"
   },
@@ -11,15 +11,15 @@
     "username": "todo",
     "password": "todoPWD",
     "database": "laura",
-    "host": "212.83.130.191",
-    "port": 5432,
+    "host": "localhost",
+    "port": 5441,
     "dialect": "postgres"
   },
   "production": {
-    "username": "ton_user_prod",
-    "password": "ton_mdp_prod",
-    "database": "ta_db_prod",
-    "host": "localhost",
+    "username": "todo",
+    "password": "todoPWD",
+    "database": "ngtodo",
+    "host": "db",
     "port": 5432,
     "dialect": "postgres"
   }
