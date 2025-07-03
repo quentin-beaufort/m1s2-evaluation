@@ -12,7 +12,6 @@ services:
       - "5440:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./init-db:/docker-entrypoint-initdb.d
     networks:
       - app_network
     healthcheck:
@@ -34,8 +33,7 @@ services:
     ports:
       - "5441:5432"
     volumes:
-      - postgres_test_data:/var/lib/postgresql/data
-      - ./init-db:/docker-entrypoint-initdb.d
+      - postgres_test_data:/var/lib/postgresql/data-test
     networks:
       - app_network
     healthcheck:
