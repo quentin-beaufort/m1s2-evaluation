@@ -52,6 +52,9 @@ jobs:
             echo "Stopping existing containers and removing volumes..."
             docker compose -f docker-compose.yml -f docker-compose.prod.yml down -v --remove-orphans
             
+            echo "Ensuring volumes are completely removed..."
+            docker volume ls -q | grep -E "(m1s2-evaluation_postgres_data|m1s2-evaluation_postgres_test_data)" | xargs -r docker volume rm || true
+            
             echo "Cleaning up unused Docker resources..."
             docker system prune -f
             
@@ -59,7 +62,7 @@ jobs:
             docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --remove-orphans
             
             echo "Waiting for database to be ready..."
-            timeout=300
+            timeout=30
             while [ $timeout -gt 0 ]; do
                 if docker compose -f docker-compose.yml -f docker-compose.prod.yml ps | grep -q "app_database_prod.*healthy"; then
                     echo "Database is healthy!"
