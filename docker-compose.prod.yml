@@ -1,0 +1,13 @@
+services:
+  backend:
+    image: lahittm/todo-backend:latest
+    environment:
+      NODE_ENV: production
+      DB_HOST: db
+      DB_NAME: ngtodo
+      DB_USER: todo
+      DB_PWD: todoPWD
+      PORT: 3000
+
+  frontend:
+    image: lahittm/todo-frontend:latest

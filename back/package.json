@@ -5,19 +5,22 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "test": "set NODE_ENV=test&& jest"
+    "test": "cross-env NODE_ENV=test jest",
+    "test:integration": "cross-env NODE_ENV=test jest --testPathPattern=integration"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
     "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "nodemon": "^3.1.10",
     "pg": "^8.16.2",
     "pg-hstore": "^2.3.4",
-    "sequelize": "^6.37.7"
+    "sequelize": "^6.37.7",
+    "sequelize-cli": "^6.6.2"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",

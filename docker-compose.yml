@@ -1,29 +1,6 @@
 services:
-  # PostgreSQL Database
-  db:
-    image: postgres:15-alpine
-    container_name: app_database
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: ngtodo
-      POSTGRES_USER: todo
-      POSTGRES_PASSWORD: todoPWD
-    ports:
-      - "5440:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./init-db:/docker-entrypoint-initdb.d
-      - ./pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
-    networks:
-      - app_network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U todo -d ngtodo"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    command: >
-      postgres
-      -c hba_file=/var/lib/postgresql/data/pg_hba.conf
+  # PostgreSQL Production Database
+
 
   # Backend API
   backend:
@@ -114,6 +91,7 @@ services:
 
 volumes:
   postgres_data:
+  postgres_test_data:
 
 networks:
   app_network:

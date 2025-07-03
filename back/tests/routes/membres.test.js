@@ -105,7 +105,6 @@ describe('GET /api/membres/:id', () => {
   it('devrait retourner une erreur 400 si des champs sont manquants', async () => {
     const res = await request(app).post('/api/membres').send({
       firstName: 'Alice',
-      // lastName manquant
       email: 'alice@mail.com'
     });
 
@@ -134,35 +133,41 @@ describe('PUT /api/membres/:id', () => {
     jest.clearAllMocks();
   });
 
-  // it('devrait mettre à jour un membre et retourner un statut 200', async () => {
-  //   const updatedData = {
-  //     firstName: 'AliceUpdated',
-  //     lastName: 'SmithUpdated',
-  //     email: 'alice.updated@mail.com'
-  //   };
+it('devrait mettre à jour un membre et retourner un statut 200', async () => {
+  const updatedData = {
+    firstName: 'AliceUpdated',
+    lastName: 'SmithUpdated',
+    email: 'alice.updated@mail.com'
+  };
 
-  //   const updatedMembre = {
-  //     id: 1,
-  //     ...updatedData
-  //   };
+  const updatedMembre = {
+    id: 1,
+    ...updatedData
+  };
 
-  //   const fakeMembre = {
-  //     id: 1,
-  //     firstName: 'Alice',
-  //     lastName: 'Smith',
-  //     email: 'alice@mail.com',
-  //     update: jest.fn().mockResolvedValue(updatedMembre)
-  //   };
+const fakeMembre = {
+  id: 1,
+  firstName: 'Alice',
+  lastName: 'Smith',
+  email: 'alice@mail.com',
+  update: jest.fn().mockImplementation(function (data) {
+    Object.assign(this, data);
+    return Promise.resolve(this);
+  }),
+};
 
-  //   Membre.findByPk = jest.fn().mockResolvedValue(fakeMembre);
+  Membre.findByPk = jest.fn().mockResolvedValue(fakeMembre);
 
-  //   const res = await request(app).put('/api/membres/1').send(updatedData);
+  const res = await request(app).put('/api/membres/1').send(updatedData);
 
-  //   expect(res.statusCode).toBe(200);
-  //   expect(fakeMembre.update).toHaveBeenCalledWith(updatedData);
-  //   expect(Membre.findByPk).toHaveBeenCalledWith('1');
-  //   expect(res.body).toEqual(expect.objectContaining(updatedData));
-  // });
+  expect(res.statusCode).toBe(200);
+expect(res.body).toEqual({
+  id: 1,
+  ...updatedData
+});
+  expect(Membre.findByPk).toHaveBeenCalledWith('1');
+  expect(fakeMembre.update).toHaveBeenCalledWith(updatedData);
+});
 
   it('devrait retourner 404 si le membre n\'existe pas', async () => {
     Membre.findByPk = jest.fn().mockResolvedValue(null);
