@@ -1,5 +1,5 @@
 services:
-  # PostgreSQL Test Database for development
+  # PostgreSQL test database for dev
   db-test:
     image: postgres:15-alpine
     container_name: app_database_test_dev

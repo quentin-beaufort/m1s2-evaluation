@@ -45,10 +45,10 @@ jobs:
         with:
           node-version: 18
 
-      - name: Npm Install
+      - name: Install dependencies
         run: npm install
         
-      - name: Install Dependencies
+      - name: Install dependencies in CI
         run: npm ci
 
       - name: Install PostgreSQL client

@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Login to Docker Hub
+      - name: Login to docker Hub
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
       - name: Build and Push Backend
@@ -55,7 +55,7 @@ jobs:
             echo "Ensuring volumes are completely removed..."
             docker volume ls -q | grep -E "(m1s2-evaluation_postgres_data|m1s2-evaluation_postgres_test_data)" | xargs -r docker volume rm || true
             
-            echo "Cleaning up unused Docker resources..."
+            echo "Cleaning up unused docker resources..."
             docker system prune -f
             
             echo "Starting services..."
