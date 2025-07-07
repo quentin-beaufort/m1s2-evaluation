@@ -15,17 +15,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Login to Docker Hub
+      - name: Login to docker Hub
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
       - name: Build and Push Backend
         run: |
-          docker build ./back -t ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/todo-backend:${{ env.TAG }}
+          docker build ./back --no-cache -t ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/todo-backend:${{ env.TAG }}
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/todo-backend:${{ env.TAG }}
 
       - name: Build and Push Frontend
         run: |
-          docker build ./front -t ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/todo-frontend:${{ env.TAG }}
+          docker build ./front --no-cache -t ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/todo-frontend:${{ env.TAG }}
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/todo-frontend:${{ env.TAG }}
 
 
@@ -36,9 +36,49 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            echo "Starting deployment process..."
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+            
+            echo "Pulling latest images..."
             docker pull lahittm/todo-backend:latest
             docker pull lahittm/todo-frontend:latest
+            
+            echo "Navigating to project directory..."
             cd /root/m1s2-evaluation
-            docker compose pull
-            docker compose up -d --remove-orphans
+            
+            echo "Pulling compose images..."
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml pull
+            
+            echo "Stopping existing containers and removing volumes..."
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml down -v --remove-orphans
+            
+            echo "Ensuring volumes are completely removed..."
+            docker volume ls -q | grep -E "(m1s2-evaluation_postgres_data|m1s2-evaluation_postgres_test_data)" | xargs -r docker volume rm || true
+            
+            echo "Cleaning up unused docker resources..."
+            docker system prune -f
+            
+            echo "Starting services..."
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --remove-orphans
+            
+            echo "Waiting for database to be ready..."
+            timeout=30
+            while [ $timeout -gt 0 ]; do
+                if docker compose -f docker-compose.yml -f docker-compose.prod.yml ps | grep -q "app_database_prod.*healthy"; then
+                    echo "Database is healthy!"
+                    break
+                fi
+                echo "Waiting for database... ($timeout seconds left)"
+                sleep 10
+                timeout=$((timeout - 10))
+            done
+            
+            if [ $timeout -le 0 ]; then
+                echo "Database failed to become healthy. Checking logs..."
+                docker compose -f docker-compose.yml -f docker-compose.prod.yml logs db
+                exit 1
+            fi
+            
+            echo "Checking final status..."
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml ps
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml logs --tail=20

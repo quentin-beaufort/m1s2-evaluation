@@ -105,7 +105,6 @@ describe('GET /api/membres/:id', () => {
   it('devrait retourner une erreur 400 si des champs sont manquants', async () => {
     const res = await request(app).post('/api/membres').send({
       firstName: 'Alice',
-      // lastName manquant
       email: 'alice@mail.com'
     });
 
@@ -128,41 +127,127 @@ describe('GET /api/membres/:id', () => {
     expect(res.body).toEqual({ error: 'Erreur serveur' });
     expect(Membre.create).toHaveBeenCalled();
   });
+
+// Tests de validation pour POST /api/membres
+  it('devrait rejeter avec 400 si firstName contient des chiffres', async () => {
+    const invalidMembre = {
+      firstName: 'Alice123',
+      lastName: 'Smith',
+      email: 'alice@mail.com'
+    };
+
+    const res = await request(app)
+      .post('/api/membres')
+      .send(invalidMembre);
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body.error).toBe('Le prénom ne doit contenir que des lettres');
+  });
+
+  it('devrait rejeter avec 400 si lastName contient des caractères spéciaux', async () => {
+    const invalidMembre = {
+      firstName: 'Alice',
+      lastName: 'Smith@',
+      email: 'alice@mail.com'
+    };
+
+    const res = await request(app)
+      .post('/api/membres')
+      .send(invalidMembre);
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body.error).toBe('Le nom ne doit contenir que des lettres');
+  });
+
+  it('devrait rejeter avec 400 si email n\'est pas valide', async () => {
+    const invalidMembre = {
+      firstName: 'Alice',
+      lastName: 'Smith',
+      email: 'alice.mail.com'
+    };
+
+    const res = await request(app)
+      .post('/api/membres')
+      .send(invalidMembre);
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body.error).toBe('Veuillez fournir une adresse email valide');
+  });
+
+  it('devrait accepter des prénoms et noms avec des accents', async () => {
+    const validMembre = {
+      firstName: 'François',
+      lastName: 'Müller',
+      email: 'francois@mail.com'
+    };
+
+    Membre.create = jest.fn().mockResolvedValue({ id: 1, ...validMembre });
+
+    const res = await request(app)
+      .post('/api/membres')
+      .send(validMembre);
+
+    expect(res.statusCode).toBe(201);
+    expect(Membre.create).toHaveBeenCalledWith(validMembre);
+  });
+
+  it('devrait accepter des noms composés avec des espaces', async () => {
+    const validMembre = {
+      firstName: 'Jean Pierre',
+      lastName: 'Van Der Berg',
+      email: 'jean.pierre@mail.com'
+    };
+
+    Membre.create = jest.fn().mockResolvedValue({ id: 1, ...validMembre });
+
+    const res = await request(app)
+      .post('/api/membres')
+      .send(validMembre);
+
+    expect(res.statusCode).toBe(201);
+    expect(Membre.create).toHaveBeenCalledWith(validMembre);
+  });
 });
 describe('PUT /api/membres/:id', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  // it('devrait mettre à jour un membre et retourner un statut 200', async () => {
-  //   const updatedData = {
-  //     firstName: 'AliceUpdated',
-  //     lastName: 'SmithUpdated',
-  //     email: 'alice.updated@mail.com'
-  //   };
+it('devrait mettre à jour un membre et retourner un statut 200', async () => {
+  const updatedData = {
+    firstName: 'AliceUpdated',
+    lastName: 'SmithUpdated',
+    email: 'alice.updated@mail.com'
+  };
 
-  //   const updatedMembre = {
-  //     id: 1,
-  //     ...updatedData
-  //   };
+  const updatedMembre = {
+    id: 1,
+    ...updatedData
+  };
 
-  //   const fakeMembre = {
-  //     id: 1,
-  //     firstName: 'Alice',
-  //     lastName: 'Smith',
-  //     email: 'alice@mail.com',
-  //     update: jest.fn().mockResolvedValue(updatedMembre)
-  //   };
+const fakeMembre = {
+  id: 1,
+  firstName: 'Alice',
+  lastName: 'Smith',
+  email: 'alice@mail.com',
+  update: jest.fn().mockImplementation(function (data) {
+    Object.assign(this, data);
+    return Promise.resolve(this);
+  }),
+};
 
-  //   Membre.findByPk = jest.fn().mockResolvedValue(fakeMembre);
+  Membre.findByPk = jest.fn().mockResolvedValue(fakeMembre);
 
-  //   const res = await request(app).put('/api/membres/1').send(updatedData);
+  const res = await request(app).put('/api/membres/1').send(updatedData);
 
-  //   expect(res.statusCode).toBe(200);
-  //   expect(fakeMembre.update).toHaveBeenCalledWith(updatedData);
-  //   expect(Membre.findByPk).toHaveBeenCalledWith('1');
-  //   expect(res.body).toEqual(expect.objectContaining(updatedData));
-  // });
+  expect(res.statusCode).toBe(200);
+expect(res.body).toEqual({
+  id: 1,
+  ...updatedData
+});
+  expect(Membre.findByPk).toHaveBeenCalledWith('1');
+  expect(fakeMembre.update).toHaveBeenCalledWith(updatedData);
+});
 
   it('devrait retourner 404 si le membre n\'existe pas', async () => {
     Membre.findByPk = jest.fn().mockResolvedValue(null);
@@ -190,6 +275,85 @@ describe('PUT /api/membres/:id', () => {
     expect(res.statusCode).toBe(500);
     expect(res.body).toEqual({ error: 'Erreur serveur' });
     expect(Membre.findByPk).toHaveBeenCalledWith('1');
+  });
+
+// Tests de validation pour PUT /api/membres/:id
+  it('devrait rejeter avec 400 si firstName contient des chiffres lors de la mise à jour', async () => {
+    const fakeMembre = {
+      id: 1,
+      firstName: 'Alice',
+      lastName: 'Smith',
+      email: 'alice@mail.com',
+      update: jest.fn()
+    };
+
+    Membre.findByPk = jest.fn().mockResolvedValue(fakeMembre);
+
+    const invalidData = {
+      firstName: 'Alice123',
+      lastName: 'Smith',
+      email: 'alice@mail.com'
+    };
+
+    const res = await request(app)
+      .put('/api/membres/1')
+      .send(invalidData);
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body.error).toBe('Le prénom ne doit contenir que des lettres');
+    expect(fakeMembre.update).not.toHaveBeenCalled();
+  });
+
+  it('devrait rejeter avec 400 si lastName contient des caractères spéciaux lors de la mise à jour', async () => {
+    const fakeMembre = {
+      id: 1,
+      firstName: 'Alice',
+      lastName: 'Smith',
+      email: 'alice@mail.com',
+      update: jest.fn()
+    };
+
+    Membre.findByPk = jest.fn().mockResolvedValue(fakeMembre);
+
+    const invalidData = {
+      firstName: 'Alice',
+      lastName: 'Smith@',
+      email: 'alice@mail.com'
+    };
+
+    const res = await request(app)
+      .put('/api/membres/1')
+      .send(invalidData);
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body.error).toBe('Le nom ne doit contenir que des lettres');
+    expect(fakeMembre.update).not.toHaveBeenCalled();
+  });
+
+  it('devrait rejeter avec 400 si email n\'est pas valide lors de la mise à jour', async () => {
+    const fakeMembre = {
+      id: 1,
+      firstName: 'Alice',
+      lastName: 'Smith',
+      email: 'alice@mail.com',
+      update: jest.fn()
+    };
+
+    Membre.findByPk = jest.fn().mockResolvedValue(fakeMembre);
+
+    const invalidData = {
+      firstName: 'Alice',
+      lastName: 'Smith',
+      email: 'alice.mail.com'
+    };
+
+    const res = await request(app)
+      .put('/api/membres/1')
+      .send(invalidData);
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body.error).toBe('Veuillez fournir une adresse email valide');
+    expect(fakeMembre.update).not.toHaveBeenCalled();
   });
 });
 

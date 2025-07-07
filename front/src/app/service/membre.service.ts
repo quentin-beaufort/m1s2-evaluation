@@ -13,7 +13,8 @@ export interface Membre {
 
 @Injectable({ providedIn: 'root' })
 export class MembreService {
-  private apiUrl = 'http://212.83.130.191:3000/api/membres';
+  // private apiUrl = 'http://212.83.130.191:3000/api/membres';
+  private apiUrl = 'http://127.0.0.1:3000/api/membres';
 
   constructor(private http: HttpClient) {}
 

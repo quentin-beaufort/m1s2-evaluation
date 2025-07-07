@@ -36,6 +36,29 @@ router.post('/', async (req, res) => {
                 error: 'firstName, lastName et email sont requis' 
             });
         }
+
+        // Validation du format firstName (seulement des lettres)
+        const nameRegex = /^[a-zA-ZÀ-ÿ\s]+$/;
+        if (!nameRegex.test(firstName)) {
+            return res.status(400).json({ 
+                error: 'Le prénom ne doit contenir que des lettres' 
+            });
+        }
+
+        // Validation du format lastName (seulement des lettres)
+        if (!nameRegex.test(lastName)) {
+            return res.status(400).json({ 
+                error: 'Le nom ne doit contenir que des lettres' 
+            });
+        }
+
+        // Validation du format email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({ 
+                error: 'Veuillez fournir une adresse email valide' 
+            });
+        }
         
         const membre = await Membre.create({
             firstName,
@@ -57,6 +80,29 @@ router.put('/:id', async (req, res) => {
         const membre = await Membre.findByPk(req.params.id);
         if (!membre) {
             return res.status(404).json({ error: 'Membre non trouvé dans la base de données' });
+        }
+
+        // Validation du format firstName (seulement des lettres)
+        const nameRegex = /^[a-zA-ZÀ-ÿ\s]+$/;
+        if (firstName && !nameRegex.test(firstName)) {
+            return res.status(400).json({ 
+                error: 'Le prénom ne doit contenir que des lettres' 
+            });
+        }
+
+        // Validation du format lastName (seulement des lettres)
+        if (lastName && !nameRegex.test(lastName)) {
+            return res.status(400).json({ 
+                error: 'Le nom ne doit contenir que des lettres' 
+            });
+        }
+
+        // Validation du format email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (email && !emailRegex.test(email)) {
+            return res.status(400).json({ 
+                error: 'Veuillez fournir une adresse email valide' 
+            });
         }
 
         await membre.update({

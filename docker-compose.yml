@@ -1,8 +1,8 @@
 services:
-  # PostgreSQL Database
+  # PostgreSQL Production Database
   db:
     image: postgres:15-alpine
-    container_name: app_database
+    container_name: app_database_prod
     restart: unless-stopped
     environment:
       POSTGRES_DB: ngtodo
@@ -12,18 +12,14 @@ services:
       - "5440:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./init-db:/docker-entrypoint-initdb.d
-      - ./pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
     networks:
       - app_network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U todo -d ngtodo"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    command: >
-      postgres
-      -c hba_file=/var/lib/postgresql/data/pg_hba.conf
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   # Backend API
   backend:
@@ -65,7 +61,7 @@ services:
     networks:
       - app_network
 
-  # Development backend (for development mode)
+  # Development backend
   backend-dev:
     build:
       context: ./back
@@ -93,7 +89,7 @@ services:
     profiles:
       - dev
 
-  # Development frontend (for development mode)
+  # Development frontend
   frontend-dev:
     build:
       context: ./front
@@ -114,6 +110,7 @@ services:
 
 volumes:
   postgres_data:
+  postgres_test_data:
 
 networks:
   app_network:

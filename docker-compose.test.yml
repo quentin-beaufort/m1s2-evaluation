@@ -1,0 +1,28 @@
+services:
+  # PostgreSQL test database for dev
+  db-test:
+    image: postgres:15-alpine
+    container_name: app_database_test_dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: laura
+      POSTGRES_USER: todo
+      POSTGRES_PASSWORD: todoPWD
+    ports:
+      - "5441:5432"
+    volumes:
+      - postgres_test_data_dev:/var/lib/postgresql/datas
+    networks:
+      - app_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  postgres_test_data_dev:
+
+networks:
+  app_network:
+    driver: bridge
