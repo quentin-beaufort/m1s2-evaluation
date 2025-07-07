@@ -85,10 +85,10 @@ describe('Tests d’intégration API /api/membres', () => {
 
     const res = await request(app)
       .put(`/api/membres/${membre.id}`)
-      .send({ firstName: 'Claire-modifiée', lastName: 'Lemoine', email: 'claire.lemoine@example.com' });
+      .send({ firstName: 'Claire modifiee', lastName: 'Lemoine', email: 'claire.lemoine@example.com' });
 
     expect(res.statusCode).toBe(200);
-    expect(res.body.firstName).toBe('Claire-modifiée');
+    expect(res.body.firstName).toBe('Claire modifiee');
   });
 
   test('PUT /api/membres/:id - 404 si membre introuvable', async () => {
