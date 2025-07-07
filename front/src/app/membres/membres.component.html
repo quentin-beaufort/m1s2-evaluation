@@ -1,41 +1,62 @@
 <!-- Formulaire d'ajout de membre -->
 <div class="card p-3 mb-4 bg-dark text-white container-membre-input">
   <h5 class="mb-3">Ajouter un membre</h5>
+  
+  <!-- Affichage des erreurs serveur -->
+  <div *ngIf="validationErrors['server']" class="alert alert-danger" role="alert">
+    {{ validationErrors['server'] }}
+  </div>
+  
   <form (ngSubmit)="addMembre()" #membreForm="ngForm">
     <div class="row g-2">
       <div class="col-md-4">
         <input
           type="text"
           class="form-control"
+          [class.is-invalid]="validationErrors['firstName']"
           placeholder="Prénom"
           name="firstName"
           [(ngModel)]="newMembre.firstName"
+          (input)="onFieldChange('firstName')"
           required
         />
+        <div *ngIf="validationErrors['firstName']" class="invalid-feedback">
+          {{ validationErrors['firstName'] }}
+        </div>
       </div>
       <div class="col-md-4">
         <input
           type="text"
           class="form-control"
+          [class.is-invalid]="validationErrors['lastName']"
           placeholder="Nom"
           name="lastName"
           [(ngModel)]="newMembre.lastName"
+          (input)="onFieldChange('lastName')"
           required
         />
+        <div *ngIf="validationErrors['lastName']" class="invalid-feedback">
+          {{ validationErrors['lastName'] }}
+        </div>
       </div>
       <div class="col-md-4">
         <input
           type="email"
           class="form-control"
+          [class.is-invalid]="validationErrors['email']"
           placeholder="Email"
           name="email"
           [(ngModel)]="newMembre.email"
+          (input)="onFieldChange('email')"
           required
         />
+        <div *ngIf="validationErrors['email']" class="invalid-feedback">
+          {{ validationErrors['email'] }}
+        </div>
       </div>
     </div>
     <div class="mt-3 d-flex justify-content-end">
-      <button class="btn btn-primary" type="submit" [disabled]="membreForm.invalid">
+      <button class="btn btn-primary" type="submit">
         Ajouter
       </button>
     </div>
@@ -56,9 +77,28 @@
     </div>
 
     <div *ngIf="membre.editing" class="editing-container">
-      <input class="form-control mb-2" [(ngModel)]="membre.firstName" placeholder="Prénom" />
-      <input class="form-control mb-2" [(ngModel)]="membre.lastName" placeholder="Nom" />
-      <input class="form-control mb-2" [(ngModel)]="membre.email" placeholder="Email" />
+      <input 
+        class="form-control mb-2" 
+        [(ngModel)]="membre.firstName" 
+        placeholder="Prénom"
+        pattern="^[a-zA-ZÀ-ÿ\s]+$"
+        title="Le prénom ne doit contenir que des lettres"
+      />
+      <input 
+        class="form-control mb-2" 
+        [(ngModel)]="membre.lastName" 
+        placeholder="Nom"
+        pattern="^[a-zA-ZÀ-ÿ\s]+$"
+        title="Le nom ne doit contenir que des lettres"
+      />
+      <input 
+        class="form-control mb-2" 
+        [(ngModel)]="membre.email" 
+        placeholder="Email"
+        type="email"
+        pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
+        title="Veuillez fournir une adresse email valide"
+      />
       <button class="btn btn-sm btn-success" (click)="toggleEditMembre(i)">Save</button>
     </div>
   </li>
