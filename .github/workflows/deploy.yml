@@ -20,12 +20,12 @@ jobs:
 
       - name: Build and Push Backend
         run: |
-          docker build ./back -t ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/todo-backend:${{ env.TAG }}
+          docker build ./back --no-cache -t ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/todo-backend:${{ env.TAG }}
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/todo-backend:${{ env.TAG }}
 
       - name: Build and Push Frontend
         run: |
-          docker build ./front -t ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/todo-frontend:${{ env.TAG }}
+          docker build ./front --no-cache -t ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/todo-frontend:${{ env.TAG }}
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/todo-frontend:${{ env.TAG }}
 
 
